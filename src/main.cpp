@@ -128,6 +128,158 @@ void loop() {
   }
 }
 
+/*
+
+namespace Config {
+    constexpr uint8_t I2C_SDA_PIN = 21;
+    constexpr uint8_t I2C_SCL_PIN = 22;
+    constexpr uint8_t DHT_DATA_PIN = 23;
+    constexpr uint8_t LCD_ADDRESS = 0x27;
+    constexpr uint8_t LCD_COLUMNS = 16;
+    constexpr uint8_t LCD_ROWS = 2;
+
+    constexpr unsigned long SENSOR_POLL_INTERVAL_MS = 2500;
+    constexpr unsigned long SERIAL_BAUD_RATE = 115200;
+}
+
+namespace DisplayCustomGlyphs {
+    constexpr uint8_t GLYPH_INDEX_TEMP = 0;
+    constexpr uint8_t GLYPH_INDEX_DROP = 1;
+    constexpr uint8_t GLYPH_INDEX_DEGREE = 2;
+
+    const uint8_t THERMOMETER[8] = {
+        0b00100, 0b01010, 0b01010, 0b01110,
+        0b01110, 0b11111, 0b11111, 0b01110
+    };
+
+    const uint8_t WATER_DROP[8] = {
+        0b00100, 0b00100, 0b01010, 0b01010,
+        0b10001, 0b10001, 0b10001, 0b01110
+    };
+
+    const uint8_t DEGREE_SYMBOL[8] = {
+        0b00110, 0b01001, 0b01001, 0b00110,
+        0b00000, 0b00000, 0b00000, 0b00000
+    };
+}
+
+struct ClimateSample {
+    float temperatureCelsius = 0.0f;
+    float humidityPercent = 0.0f;
+    bool isValid = false;
+};
+
+// Instâncias de Hardware
+LiquidCrystal_I2C lcd(Config::LCD_ADDRESS, Config::LCD_COLUMNS, Config::LCD_ROWS);
+DHT dht(Config::DHT_DATA_PIN, DHT22);
+
+// Protótipos das Funções
+void initializeDisplay();
+ClimateSample acquireClimateSample();
+void renderToLCD(const ClimateSample& sample);
+void logTelemetryToSerial(const ClimateSample& sample);
+
+void setup() {
+    Serial.begin(Config::SERIAL_BAUD_RATE);
+    Wire.begin(Config::I2C_SDA_PIN, Config::I2C_SCL_PIN);
+    pinMode(Config::DHT_DATA_PIN, INPUT_PULLUP);
+
+    initializeDisplay();
+    dht.begin();
+
+    Serial.println(F("[SISTEMA] Inicializacao concluida com sucesso."));
+}
+
+void loop() {
+    static unsigned long lastAcquisitionTimestamp = 0;
+    const unsigned long currentTimestamp = millis();
+
+    if (currentTimestamp - lastAcquisitionTimestamp >= Config::SENSOR_POLL_INTERVAL_MS) {
+        lastAcquisitionTimestamp = currentTimestamp;
+
+        const ClimateSample currentSample = acquireClimateSample();
+        
+        renderToLCD(currentSample);
+        logTelemetryToSerial(currentSample);
+    }
+}
+
+// -------------------------------------------------------------
+// Implementação dos Módulos
+// -------------------------------------------------------------
+
+void initializeDisplay() {
+    lcd.init();
+    lcd.backlight();
+
+    lcd.createChar(DisplayCustomGlyphs::GLYPH_INDEX_TEMP, const_cast(DisplayCustomGlyphs::THERMOMETER));
+    lcd.createChar(DisplayCustomGlyphs::GLYPH_INDEX_DROP, const_cast(DisplayCustomGlyphs::WATER_DROP));
+    lcd.createChar(DisplayCustomGlyphs::GLYPH_INDEX_DEGREE, const_cast(DisplayCustomGlyphs::DEGREE_SYMBOL));
+
+    lcd.setCursor(0, 0);
+    lcd.print("Estacao Clima");
+    lcd.setCursor(0, 1);
+    lcd.print("Iniciando...");
+    delay(1200);
+    lcd.clear();
+}
+
+ClimateSample acquireClimateSample() {
+    ClimateSample sample;
+    sample.humidityPercent = dht.readHumidity();
+    sample.temperatureCelsius = dht.readTemperature();
+
+    // Guard Clause de validação
+    if (isnan(sample.humidityPercent) || isnan(sample.temperatureCelsius)) {
+        sample.isValid = false;
+        return sample;
+    }
+
+    sample.isValid = true;
+    return sample;
+}
+
+void renderToLCD(const ClimateSample& sample) {
+    if (!sample.isValid) {
+        lcd.setCursor(0, 0);
+        lcd.print("Erro no sensor! ");
+        lcd.setCursor(0, 1);
+        lcd.print("Checar GPIO 23  ");
+        return;
+    }
+
+    // Linha 0: Temperatura
+    lcd.setCursor(0, 0);
+    lcd.write(byte(DisplayCustomGlyphs::GLYPH_INDEX_TEMP));
+    lcd.print(" Temp: ");
+    lcd.print(sample.temperatureCelsius, 1);
+    lcd.write(byte(DisplayCustomGlyphs::GLYPH_INDEX_DEGREE));
+    lcd.print("C  ");
+
+    // Linha 1: Umidade
+    lcd.setCursor(0, 1);
+    lcd.write(byte(DisplayCustomGlyphs::GLYPH_INDEX_DROP));
+    lcd.print(" Umid: ");
+    lcd.print(sample.humidityPercent, 1);
+    lcd.print("%   ");
+}
+
+void logTelemetryToSerial(const ClimateSample& sample) {
+    if (!sample.isValid) {
+        Serial.println(F("[ERRO] Falha de comunicacao com o sensor DHT22."));
+        return;
+    }
+
+    Serial.print(F("[TELEMETRIA] Temp: "));
+    Serial.print(sample.temperatureCelsius, 1);
+    Serial.print(F(" C | Umid: "));
+    Serial.print(sample.humidityPercent, 1);
+    Serial.println(F(" %"));
+}
+
+
+*/
+
 
 /*
 
